@@ -1,8 +1,9 @@
 // Require packages
 const robot = require('robotjs');
 
-// Reduce mouse delay
+// Reduce mouse & keyboard delay
 robot.setMouseDelay(2);
+robot.setKeyboardDelay(2);
 
 // Set x variables
 const projects = 250;
@@ -13,6 +14,8 @@ const importFinishx = 950;
 const maximise = 1170;
 const nextx = 1200;
 const centre = 650;
+const inputProperty = 400;
+const importPopupx = 550;
 
 // x-positions (inclusive)
 // Input fields - property = 400 - 480
@@ -38,15 +41,22 @@ const newAccept = 340;
 const manualy = fourth;
 const importTraining = 420;
 const importValidation = 560;
-const importFolder = 160;
+const importPopupy = 530;
 const importFinishy = 490;
 const nexty = 200;
 
 // Set y variables for model setup homescreen
-one = 320;
-two = 360;
+one = 330;
+two = 355;
 three = 380;
-four = 410;
+four = 405;
+five = 430;
+six = 455;
+seven = 480;
+eight = 505;
+nine = 530;
+ten = 555;
+eleven = 580;
 
 
 // Open DMway
@@ -100,7 +110,7 @@ const setManualUpload = () => {
   robot.keyTap('enter');
 };
 
-// Function to upload training file
+// Upload training file
 const trainingUpload = () => {
   robot.moveMouse(importx,importTraining);
   robot.mouseClick('left');
@@ -112,97 +122,122 @@ const trainingUpload = () => {
   },500);
 
   setTimeout(function() {
-    robot.moveMouse(importx,importFolder);
-    robot.mouseClick('right');
+    robot.moveMouse(importPopupx,importPopupy);
+    robot.mouseClick('left');
+    robot.typeString("C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv");
+    robot.keyTap('enter');
   },1000);
 
   setTimeout(function() {
-    robot.keyTap('down');
-    robot.keyTap('down');
-    robot.keyTap('down');
-    robot.keyTap('enter');
-  },1400);
-
-  setTimeout(function() {
-    robot.typeString("C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham");
-    robot.keyTap('enter');
-  },2000);
-
-  setTimeout(function() {
     robot.moveMouse(importx,fourth);
     robot.mouseClick('left');
-  },3000);
+  },1500);
 
   setTimeout(function() {
     robot.moveMouse(importFinishx,importFinishy);
     robot.mouseClick('left');
-  },4000);
+  },2000);
 };
 
-// Function to upload validation file
+// Upload validation file + click next
 const validationUpload = () => {
+  robot.moveMouse(importx,importValidation);
+  robot.mouseClick('left');
+
   setTimeout(function() {
-    robot.moveMouse(importx,importValidation);
+    robot.keyTap('down');
+    robot.keyTap('down');
+    robot.keyTap('enter');
+  },500);
+
+  setTimeout(function() {
+    robot.moveMouse(importPopupx,importPopupy);
     robot.mouseClick('left');
-  },100);
-
-  setTimeout(function() {
-    robot.keyTap('down');
-    robot.keyTap('down');
+    robot.typeString("C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv");
     robot.keyTap('enter');
-  },700);
-
-  setTimeout(function() {
-    robot.moveMouse(importx,importFolder);
-    robot.mouseClick('right');
-  },1200);
-
-  setTimeout(function() {
-    robot.keyTap('down');
-    robot.keyTap('down');
-    robot.keyTap('down');
-    robot.keyTap('enter');
-  },1400);
-
-  setTimeout(function() {
-    robot.typeString("C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham");
-    robot.keyTap('enter');
-  },2000);
+  },1000);
 
   setTimeout(function() {
     robot.moveMouse(importx,fourth);
     robot.mouseClick('left');
-  },3000);
+  },1500);
 
   setTimeout(function() {
     robot.moveMouse(importFinishx,importFinishy);
     robot.mouseClick('left');
-  },4000);
+  },2000);
 
   setTimeout(function() {
     robot.moveMouse(nextx,nexty);
     robot.mouseClick('left');
-  },5000);
+  },2500);
 };
 
 
 // Configure setup fields
 const setup = () => {
-  robot.moveMouse(400,one);
+  robot.moveMouse(inputProperty,one);
   robot.mouseClick('left');
   robot.keyTap('down');
-  robot.keyTap('down');
   robot.keyTap('enter');
+
+  robot.moveMouse(inputProperty,four);
+  robot.mouseClick('left');
+  robot.keyTap('up');
+  robot.keyTap('enter');
+
+  robot.moveMouse(inputProperty,five);
+  robot.mouseClick('left');
+  robot.keyTap('up');
+  robot.keyTap('up');
+  robot.keyTap('enter');
+
+  robot.moveMouse(inputProperty,six);
+  robot.mouseClick('left');
+  robot.keyTap('up');
+  robot.keyTap('up');
+  robot.keyTap('enter');
+
+  robot.moveMouse(inputProperty,seven);
+  robot.mouseClick('left');
+  robot.keyTap('up');
+  robot.keyTap('up');
+  robot.keyTap('enter');
+
+  robot.moveMouse(inputProperty,eight);
+  robot.mouseClick('left');
+  robot.keyTap('up');
+  robot.keyTap('up');
+  robot.keyTap('enter');
+
+  robot.moveMouse(inputProperty,nine);
+  robot.mouseClick('left');
+  robot.keyTap('up');
+  robot.keyTap('up');
+  robot.keyTap('enter');
+
+  robot.moveMouse(inputProperty,ten);
+  robot.mouseClick('left');
+  robot.keyTap('up');
+  robot.keyTap('up');
+  robot.keyTap('enter');
+
+  robot.moveMouse(inputProperty,eleven);
+  robot.mouseClick('left');
+  robot.keyTap('up');
+  robot.keyTap('up');
+  robot.keyTap('enter');
+
+  robot.moveMouse(nextx,nexty);
+  robot.mouseClick('left');
 };
 
 // Run upload functions and move to setup screen
 // openDmway();
 selectDmway();
-setTimeout(openModel,1000);
-setTimeout(nameNewModel,4000)
+// setTimeout(openModel,1000);
+// setTimeout(nameNewModel,4000)
 // setTimeout(setManualUpload,17000);
-// setTimeout(trainingUpload,17500);
-// setTimeout(validationUpload,24000);
-// setTimeout(setup,28000);
-
-// Required for testing once DMway already launched
+setTimeout(trainingUpload,1000);
+setTimeout(validationUpload,4000);
+// setTimeout(setup,1000);
