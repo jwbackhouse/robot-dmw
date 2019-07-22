@@ -1,0 +1,26 @@
+{
+  "name": "robot",
+  "version": "1.0.0",
+  "description": "Remote control of mouse",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwbackhouse/robot.git"
+  },
+  "keywords": [
+    "Skarp",
+    "remote"
+  ],
+  "author": "James Backhouse",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jwbackhouse/robot/issues"
+  },
+  "homepage": "https://github.com/jwbackhouse/robot#readme",
+  "dependencies": {
+    "robotjs": "^0.5.1"
+  }
+}
