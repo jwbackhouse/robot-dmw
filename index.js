@@ -5,9 +5,6 @@ const robot = require('robotjs');
 robot.setMouseDelay(2);
 robot.setKeyboardDelay(2);
 
-
-let inputType = '';
-
 // Set x variables
 const projects = 250;
 const modelx = 850;
@@ -61,9 +58,25 @@ twelve = 600;
 thirteen = 625;
 
 
-// Set variable valuables
-let settings = {project:first, model:first, name:"Test 2", description:"Second test", training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv", validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv", destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx"}
-let setupSettingsArray = [[one,"characterKey"],[four,"target"],[five,"exclude"],[six,"exclude"],[seven,"exclude"],[eight, "exclude"],[nine,"exclude"]];
+// Define settings
+let settings = {
+  project:second,
+  model:newModel,
+  name:"Test 3",
+  description:"Third test",
+  training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv",
+  validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv",
+  destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx"}
+let setupSettingsArray = [
+  [one,"characterKey"],
+  [four,"exclude"],
+  [five,"target"],
+  [six,"exclude"],
+  [seven,"exclude"],
+  [eight, "exclude"],
+  [nine,"exclude"]
+];
+
 
 // HELPER FUNCTIONS
 // Select file in popup window
@@ -84,6 +97,8 @@ const clickNext = () => {
   robot.mouseClick('left');
 }
 
+
+// PRIMARY FUNCTIONS
 // Select DMway when already open
 const selectDmway = () => {
   robot.moveMouse(5,180);
@@ -110,7 +125,7 @@ const openModel = () => {
   robot.mouseClick('left','double');
 };
 
-// Name new model
+// Name new model & choose manual setting
 const nameNewModel = () => {
   robot.moveMouse(centre,newName);
   robot.mouseClick('left');
@@ -120,6 +135,12 @@ const nameNewModel = () => {
   robot.typeString(settings.description);
   robot.moveMouse(centre,newAccept);
   robot.mouseClick('left');
+  setTimeout(function() {
+    robot.moveMouse(manualx,manualy);
+    robot.mouseClick('left');
+    robot.keyTap('down');
+    robot.keyTap('enter');
+  },1000);
 };
 
 // Set upload to manual setting
@@ -267,17 +288,18 @@ const scoringUpload = () => {
   },13000);
 };
 
+// FUNCTIONS TO RUN
 // Run upload functions and move to setup screen
 selectDmway();
 // openDmway();
-// setTimeout(openModel,500);
-// // setTimeout(nameNewModel,2000)
-// setTimeout(setManualUpload,3000);
-// setTimeout(trainingUpload,4000);
-// setTimeout(validationUpload,7000);
-// setTimeout(function() {
-//   for (i=0; i<setupSettingsArray.length; i++) {
-//     setup(setupSettingsArray[i][0],setupSettingsArray[i][1])
-//   }
-// },14000)
-setTimeout(scoringUpload,1000);
+setTimeout(openModel,500);
+setTimeout(nameNewModel,2000)
+// setTimeout(setManualUpload,3000); // For new models only
+setTimeout(trainingUpload,4000);
+setTimeout(validationUpload,7000);
+setTimeout(function() {
+  for (i=0; i<setupSettingsArray.length; i++) {
+    setup(setupSettingsArray[i][0],setupSettingsArray[i][1])
+  }
+},14000)
+setTimeout(scoringUpload,74000);
