@@ -16,6 +16,8 @@ const nextx = 1200;
 const centre = 650;
 const inputProperty = 410;
 const importPopupx = 550;
+const buildx = 120;
+const setupx = 495;
 
 // Set y variables for homescreen
 const newModel = 160
@@ -57,6 +59,10 @@ eleven = 575;
 twelve = 600;
 thirteen = 625;
 
+// Set other y variables
+const buildy = 125;
+const setupy = 195;
+
 
 // Define settings
 let settings = {
@@ -66,8 +72,10 @@ let settings = {
   description:"Third test",
   training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv",
   validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv",
-  destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx"}
-let setupSettingsArray = [
+  destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx"
+};
+
+const setupOne = [
   [one,"characterKey"],
   [four,"exclude"],
   [five,"target"],
@@ -75,6 +83,21 @@ let setupSettingsArray = [
   [seven,"exclude"],
   [eight, "exclude"],
   [nine,"exclude"]
+]
+
+const setupTwo = [
+  [one,"characterKey"],
+  [four,"exclude"],
+  [five,"exclude"],
+  [six,"target"],
+  [seven,"exclude"],
+  [eight, "exclude"],
+  [nine,"exclude"]
+]
+
+const setupSuite = [
+  setupOne,
+  setupTwo
 ];
 
 
@@ -95,6 +118,27 @@ const popupUpload = (fileString) => {
 const clickNext = () => {
   robot.moveMouse(nextx,nexty);
   robot.mouseClick('left');
+}
+
+// Timer function for iteration loop
+function timer(ms) {
+  return new Promise(res => setTimeout(res, ms));
+}
+
+// Iteration loop for setup
+async function setupLoop () {
+  for (i=0; i<setupSuite.length; i++) {
+    for (j=0; j<setupSuite[i].length; j++) {
+      setup(setupSuite[i][j][0],setupSuite[i][j][1]);
+    }
+    setTimeout(clickNext,2000);
+    setTimeout(scoringUpload,30000); // was 74k
+    setTimeout(selectDmway,45000);
+    setTimeout(navigateSetup,46000);
+    await timer(47000);
+    console.log(i,j);
+  }
+  console.log('Complete.');
 }
 
 
@@ -227,7 +271,6 @@ const setup = (fieldNum, desiredProperty) => {
       robot.mouseClick('left');
       break;
   }
-  setTimeout(clickNext,2000);
 };
 
 // Score and copy data to destination file
@@ -237,16 +280,20 @@ const scoringUpload = () => {
   robot.mouseClick('left');
   robot.moveMouse(440,190);
   robot.mouseClick('left');
-
+  console.log('Navigated to scoring');
   // Upload scoring file
-  robot.moveMouse(625,360);
-  robot.mouseClick('left');
-  robot.keyTap('down');
-  robot.keyTap('down');
-  robot.keyTap('enter');
   setTimeout(function() {
-    popupUpload(settings.validation);
+    robot.moveMouse(625,360);
+    robot.mouseClick('left');
+    robot.keyTap('down');
+    robot.keyTap('down');
+    robot.keyTap('enter');
+    console.log('selected popup');
+    setTimeout(function() {
+      popupUpload(settings.validation);
+    },500);
   },500);
+
 
   // Select score with predictors and press 'go'
   setTimeout(function() {
@@ -267,39 +314,44 @@ const scoringUpload = () => {
     robot.keyToggle('shift','up');
   },6000);
 
+  // Copy data
   setTimeout(function() {
-    // Copy data
     robot.mouseClick('right');
     robot.moveMouse(310,670);
     robot.mouseClick('left');
+  },7000);
 
-    // Open destination file
+  // Open destination file
+  setTimeout(function() {
     robot.moveMouse(30,75)
     robot.mouseClick('left');
     robot.moveMouse(185,155);
     robot.mouseClick('left');
     robot.typeString(settings.destination);
     robot.keyTap('enter');
-  },7000);
+  },8000);
 
   // Paste data into destination file
   setTimeout(function() {
     robot.keyTap('v','control');
-  },13000);
+  },10000);
 };
+
+// Navigate from scoring to setup package
+const navigateSetup = () => {
+  robot.moveMouse(buildx,buildy);
+  robot.mouseClick('left');
+  robot.moveMouse(setupx,setupy);
+  robot.mouseClick('left');
+}
 
 // FUNCTIONS TO RUN
 // Run upload functions and move to setup screen
 selectDmway();
 // openDmway();
-setTimeout(openModel,500);
-setTimeout(nameNewModel,2000)
+// setTimeout(openModel,500);
+// setTimeout(nameNewModel,2000)
 // setTimeout(setManualUpload,3000); // For new models only
-setTimeout(trainingUpload,4000);
-setTimeout(validationUpload,7000);
-setTimeout(function() {
-  for (i=0; i<setupSettingsArray.length; i++) {
-    setup(setupSettingsArray[i][0],setupSettingsArray[i][1])
-  }
-},14000)
-setTimeout(scoringUpload,74000);
+// setTimeout(trainingUpload,4000);
+// setTimeout(validationUpload,7000);
+setTimeout(setupLoop,500); // Was 14k
