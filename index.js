@@ -116,6 +116,17 @@ const setManualUpload = () => {
   robot.keyTap('enter');
 };
 
+const popupUpload = (fileString) => {
+  robot.moveMouse(importPopupx,importPopupy);
+  robot.mouseClick('left');
+  robot.typeString(fileString);
+  robot.keyTap('enter');
+  setTimeout(function() {
+    robot.moveMouse(importFinishx,importFinishy);
+    robot.mouseClick('left');
+  },500);
+}
+
 // Upload training file
 const trainingUpload = () => {
   robot.moveMouse(importx,importTraining);
@@ -231,6 +242,69 @@ const setup = (fieldNum, desiredProperty) => {
   }
 };
 
+// Select scoring file
+const scoringUpload = () => {
+  // Navigate to Scoring > Score data page
+  robot.moveMouse(110,205);
+  robot.mouseClick('left');
+  // setTimeout(function() {
+    robot.moveMouse(440,190);
+    robot.mouseClick('left');
+  // },500);
+  // setTimeout(function() {
+  // },1000);
+
+  // Upload scoring file
+  robot.moveMouse(625,360);
+  robot.mouseClick('left');
+  robot.keyTap('down');
+  robot.keyTap('down');
+  robot.keyTap('enter');
+  setTimeout(function() {
+    popupUpload(settings.validation);
+  },500);
+
+  // Select score with predictors and press 'go'
+  setTimeout(function() {
+    robot.moveMouse(515,400);
+    robot.mouseClick('left');
+    robot.moveMouse(390,440);
+    robot.mouseClick('left')
+  },3000);
+
+  // Highlight first two columns
+  setTimeout(function() {
+    robot.moveMouse(230,520);
+    robot.mouseClick('left');
+    robot.scrollMouse(0,-10000);
+    robot.moveMouse(290,650);
+    robot.keyToggle('shift','down');
+    robot.mouseClick('left');
+    robot.keyToggle('shift','up');
+  },7000);
+
+// Copy data
+setTimeout(function() {
+    robot.mouseClick('right');
+    robot.moveMouse(310,670);
+    robot.mouseClick('left');
+
+    // Open destination file
+    robot.moveMouse(30,75)
+    robot.mouseClick('left');
+    robot.moveMouse(185,155);
+    robot.mouseClick('left');
+    robot.typeString('C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx');
+    robot.keyTap('enter');
+  },8000);
+
+  // Paste data into destination file
+  setTimeout(function() {
+    robot.keyTap('v','control');
+  },14000);
+
+}
+
 // Run upload functions and move to setup screen
 // openDmway();
 selectDmway();
@@ -239,9 +313,9 @@ selectDmway();
 // setTimeout(setManualUpload,3000);
 // setTimeout(trainingUpload,5000);
 // setTimeout(validationUpload,9000);
-setTimeout(function() {
-  for (i=0; i<setupSettingsArray.length; i++) {
-    setup(setupSettingsArray[i][0],setupSettingsArray[i][1])
-  }
-},500)
-// setTimeout(setup,1000);
+// setTimeout(function() {
+//   for (i=0; i<setupSettingsArray.length; i++) {
+//     setup(setupSettingsArray[i][0],setupSettingsArray[i][1])
+//   }
+// },500)
+setTimeout(scoringUpload,1000);
