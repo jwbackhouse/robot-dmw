@@ -22,15 +22,15 @@ const importPopupx = 550;
 
 // Set y variables for homescreen
 const newModel = 160
-const first = 240;
-const second = 260;
-const third = 280;
+const first = 225;
+const second = 250;
+const third = 275;
 const fourth = 300;
-const fifth = 320;
-const sixth = 340;
-const seventh = 370;
-const eighth = 390;
-const ninth = 415;
+const fifth = 325;
+const sixth = 350;
+const seventh = 375;
+const eighth = 400;
+const ninth = 425;
 
 // Set y variables for new model popup
 const newName = 250;
@@ -47,75 +47,26 @@ const nexty = 200;
 
 // Set y variables for model setup homescreen
 one = 325;
-two = 355;
-three = 380;
-four = 405;
-five = 430;
-six = 455;
-seven = 480;
-eight = 505;
-nine = 530;
-ten = 555;
-eleven = 580;
-twelve = 605;
-thirteen = 630;
+two = 350;
+three = 375;
+four = 400;
+five = 425;
+six = 450;
+seven = 475;
+eight = 500;
+nine = 525;
+ten = 550;
+eleven = 575;
+twelve = 600;
+thirteen = 625;
 
 
 // Set variable valuables
-let settings = {project:first, model:first, name:"Test 1", description:"First test", training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv", validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv"}
+let settings = {project:first, model:first, name:"Test 2", description:"Second test", training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv", validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv", destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx"}
 let setupSettingsArray = [[one,"characterKey"],[four,"target"],[five,"exclude"],[six,"exclude"],[seven,"exclude"],[eight, "exclude"],[nine,"exclude"]];
 
-// Open DMway
-const openDmway = () => {
-  robot.moveMouse(5,180);
-  robot.mouseClick('left');
-  setTimeout(function() {
-    robot.moveMouse(maximise,20);
-    robot.mouseClick('left');
-  },12000)
-};
-
-// Select DMway when already open
-const selectDmway = () => {
-  robot.moveMouse(5,180);
-  robot.mouseClick('left');
-};
-
-// Open model
-const openModel = () => {
-  robot.moveMouse(projects, settings.project);
-  robot.mouseClick('left');
-  setTimeout(function() {
-    robot.moveMouse(modelx, settings.model);
-    robot.mouseClick('left','double');
-  },1000)
-};
-
-// Name new model
-const nameNewModel = () => {
-  robot.moveMouse(centre,newName);
-  robot.mouseClick('left');
-  robot.typeString(settings.name);
-  setTimeout(function() {
-    robot.moveMouse(centre,newDesc);
-    robot.mouseClick('left');
-    robot.typeString(settings.description);
-  },500);
-  setTimeout(function() {
-    robot.moveMouse(centre,newAccept);
-    robot.mouseClick('left');
-  },1000);
-
-};
-
-// Set upload to manual setting
-const setManualUpload = () => {
-  robot.moveMouse(manualx,manualy);
-  robot.mouseClick('left');
-  robot.keyTap('down');
-  robot.keyTap('enter');
-};
-
+// HELPER FUNCTIONS
+// Select file in popup window
 const popupUpload = (fileString) => {
   robot.moveMouse(importPopupx,importPopupy);
   robot.mouseClick('left');
@@ -127,67 +78,82 @@ const popupUpload = (fileString) => {
   },500);
 }
 
+// Click next
+const clickNext = () => {
+  robot.moveMouse(nextx,nexty);
+  robot.mouseClick('left');
+}
+
+// Select DMway when already open
+const selectDmway = () => {
+  robot.moveMouse(5,180);
+  robot.mouseClick('left');
+};
+
+// Open DMway
+const openDmway = () => {
+  robot.moveMouse(5,180);
+  robot.mouseClick('left');
+  setTimeout(function() {
+    robot.moveMouse(maximise,20);
+    robot.mouseClick('left');
+  },12000)
+};
+
+// Open model
+const openModel = () => {
+  robot.moveMouse(projects, settings.project);
+  robot.scrollMouse(0,5000);
+  robot.mouseClick('left');
+  robot.moveMouse(modelx, settings.model);
+  robot.scrollMouse(0,5000);
+  robot.mouseClick('left','double');
+};
+
+// Name new model
+const nameNewModel = () => {
+  robot.moveMouse(centre,newName);
+  robot.mouseClick('left');
+  robot.typeString(settings.name);
+  robot.moveMouse(centre,newDesc);
+  robot.mouseClick('left');
+  robot.typeString(settings.description);
+  robot.moveMouse(centre,newAccept);
+  robot.mouseClick('left');
+};
+
+// Set upload to manual setting
+const setManualUpload = () => {
+  robot.moveMouse(manualx,manualy);
+  robot.mouseClick('left');
+  robot.keyTap('down');
+  robot.keyTap('enter');
+};
+
 // Upload training file
 const trainingUpload = () => {
   robot.moveMouse(importx,importTraining);
   robot.mouseClick('left');
-
+  robot.keyTap('down');
+  robot.keyTap('down');
+  robot.keyTap('enter');
   setTimeout(function() {
-    robot.keyTap('down');
-    robot.keyTap('down');
-    robot.keyTap('enter');
+    popupUpload(settings.training)
   },500);
-
-  setTimeout(function() {
-    robot.moveMouse(importPopupx,importPopupy);
-    robot.mouseClick('left');
-    robot.typeString(settings.training);
-    robot.keyTap('enter');
-  },1500);
-
-  setTimeout(function() {
-    robot.moveMouse(importx,fourth);
-    robot.mouseClick('left');
-  },2500);
-
-  setTimeout(function() {
-    robot.moveMouse(importFinishx,importFinishy);
-    robot.mouseClick('left');
-  },3000);
 };
 
 // Upload validation file + click next
 const validationUpload = () => {
   robot.moveMouse(importx,importValidation);
   robot.mouseClick('left');
-
+  robot.keyTap('down');
+  robot.keyTap('down');
+  robot.keyTap('enter');
   setTimeout(function() {
-    robot.keyTap('down');
-    robot.keyTap('down');
-    robot.keyTap('enter');
+    popupUpload(settings.validation)
   },500);
 
-  setTimeout(function() {
-    robot.moveMouse(importPopupx,importPopupy);
-    robot.mouseClick('left');
-    robot.typeString(settings.validation);
-    robot.keyTap('enter');
-  },1500);
-
-  setTimeout(function() {
-    robot.moveMouse(importx,fourth);
-    robot.mouseClick('left');
-  },2500);
-
-  setTimeout(function() {
-    robot.moveMouse(importFinishx,importFinishy);
-    robot.mouseClick('left');
-  },3000);
-
-  setTimeout(function() {
-    robot.moveMouse(nextx,nexty);
-    robot.mouseClick('left');
-  },4000);
+  setTimeout(clickNext,3000);
 };
 
 // Configure setup fields
@@ -240,19 +206,16 @@ const setup = (fieldNum, desiredProperty) => {
       robot.mouseClick('left');
       break;
   }
+  setTimeout(clickNext,2000);
 };
 
-// Select scoring file
+// Score and copy data to destination file
 const scoringUpload = () => {
   // Navigate to Scoring > Score data page
   robot.moveMouse(110,205);
   robot.mouseClick('left');
-  // setTimeout(function() {
-    robot.moveMouse(440,190);
-    robot.mouseClick('left');
-  // },500);
-  // setTimeout(function() {
-  // },1000);
+  robot.moveMouse(440,190);
+  robot.mouseClick('left');
 
   // Upload scoring file
   robot.moveMouse(625,360);
@@ -281,10 +244,10 @@ const scoringUpload = () => {
     robot.keyToggle('shift','down');
     robot.mouseClick('left');
     robot.keyToggle('shift','up');
-  },7000);
+  },6000);
 
-// Copy data
-setTimeout(function() {
+  setTimeout(function() {
+    // Copy data
     robot.mouseClick('right');
     robot.moveMouse(310,670);
     robot.mouseClick('left');
@@ -294,28 +257,27 @@ setTimeout(function() {
     robot.mouseClick('left');
     robot.moveMouse(185,155);
     robot.mouseClick('left');
-    robot.typeString('C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx');
+    robot.typeString(settings.destination);
     robot.keyTap('enter');
-  },8000);
+  },7000);
 
   // Paste data into destination file
   setTimeout(function() {
     robot.keyTap('v','control');
-  },14000);
-
-}
+  },13000);
+};
 
 // Run upload functions and move to setup screen
-// openDmway();
 selectDmway();
+// openDmway();
 // setTimeout(openModel,500);
-// setTimeout(nameNewModel,2000)
+// // setTimeout(nameNewModel,2000)
 // setTimeout(setManualUpload,3000);
-// setTimeout(trainingUpload,5000);
-// setTimeout(validationUpload,9000);
+// setTimeout(trainingUpload,4000);
+// setTimeout(validationUpload,7000);
 // setTimeout(function() {
 //   for (i=0; i<setupSettingsArray.length; i++) {
 //     setup(setupSettingsArray[i][0],setupSettingsArray[i][1])
 //   }
-// },500)
+// },14000)
 setTimeout(scoringUpload,1000);
