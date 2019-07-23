@@ -5,9 +5,12 @@ const robot = require('robotjs');
 robot.setMouseDelay(2);
 robot.setKeyboardDelay(2);
 
+
+let inputType = '';
+
 // Set x variables
 const projects = 250;
-const models = 850;
+const modelx = 850;
 const importx = 650;
 const manualx = 400;
 const importFinishx = 950;
@@ -17,11 +20,8 @@ const centre = 650;
 const inputProperty = 400;
 const importPopupx = 550;
 
-// x-positions (inclusive)
-// Input fields - property = 400 - 480
-
 // Set y variables for homescreen
-const buttons = 160
+const newModel = 160
 const first = 240;
 const second = 260;
 const third = 280;
@@ -59,6 +59,10 @@ ten = 555;
 eleven = 580;
 
 
+// Set variable valuables
+let settings = {project:first, model:first, name:"Test 1", description:"First test", training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv", validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv"}
+let setupSettingsArray = [[two,"oneUp"],[three,"twoUp"],[four,"oneUp"]];
+
 // Open DMway
 const openDmway = () => {
   robot.moveMouse(5,180);
@@ -77,23 +81,23 @@ const selectDmway = () => {
 
 // Open model
 const openModel = () => {
-  robot.moveMouse(projects,second);
+  robot.moveMouse(projects, settings.project);
   robot.mouseClick('left');
   setTimeout(function() {
-    robot.moveMouse(models,buttons);
-    robot.mouseClick('left');
-  },500)
+    robot.moveMouse(modelx, settings.model);
+    robot.mouseClick('left','double');
+  },1000)
 };
 
 // Name new model
 const nameNewModel = () => {
   robot.moveMouse(centre,newName);
   robot.mouseClick('left');
-  robot.typeString('NewModel1');
+  robot.typeString(settings.name);
   setTimeout(function() {
     robot.moveMouse(centre,newDesc);
     robot.mouseClick('left');
-    robot.typeString('Description');
+    robot.typeString(settings.description);
   },500);
   setTimeout(function() {
     robot.moveMouse(centre,newAccept);
@@ -124,19 +128,19 @@ const trainingUpload = () => {
   setTimeout(function() {
     robot.moveMouse(importPopupx,importPopupy);
     robot.mouseClick('left');
-    robot.typeString("C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv");
+    robot.typeString(settings.training);
     robot.keyTap('enter');
-  },1000);
+  },1500);
 
   setTimeout(function() {
     robot.moveMouse(importx,fourth);
     robot.mouseClick('left');
-  },1500);
+  },2500);
 
   setTimeout(function() {
     robot.moveMouse(importFinishx,importFinishy);
     robot.mouseClick('left');
-  },2000);
+  },3000);
 };
 
 // Upload validation file + click next
@@ -153,28 +157,49 @@ const validationUpload = () => {
   setTimeout(function() {
     robot.moveMouse(importPopupx,importPopupy);
     robot.mouseClick('left');
-    robot.typeString("C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv");
+    robot.typeString(settings.validation);
     robot.keyTap('enter');
-  },1000);
+  },1500);
 
   setTimeout(function() {
     robot.moveMouse(importx,fourth);
     robot.mouseClick('left');
-  },1500);
+  },2500);
 
   setTimeout(function() {
     robot.moveMouse(importFinishx,importFinishy);
     robot.mouseClick('left');
-  },2000);
+  },3000);
 
   setTimeout(function() {
     robot.moveMouse(nextx,nexty);
     robot.mouseClick('left');
-  },2500);
+  },4000);
 };
 
-
 // Configure setup fields
+const setupA = (fieldNum, fieldChange) => {
+  robot.moveMouse(inputProperty,fieldNum);
+  switch (fieldChange) {
+    case 'oneDown':
+      robot.mouseClick('left');
+      robot.keyTap('down');
+      robot.keyTap('enter');
+      break;
+    case 'oneUp':
+      robot.mouseClick('left');
+      robot.keyTap('up');
+      robot.keyTap('enter');
+      break;
+    case 'twoUp':
+      robot.mouseClick('left');
+      robot.keyTap('up');
+      robot.keyTap('up');
+      robot.keyTap('enter');
+      break;
+  }
+}
+
 const setup = () => {
   robot.moveMouse(inputProperty,one);
   robot.mouseClick('left');
@@ -235,9 +260,13 @@ const setup = () => {
 // Run upload functions and move to setup screen
 // openDmway();
 selectDmway();
-// setTimeout(openModel,1000);
-// setTimeout(nameNewModel,4000)
-// setTimeout(setManualUpload,17000);
-setTimeout(trainingUpload,1000);
-setTimeout(validationUpload,4000);
-// setTimeout(setup,1000);
+// setTimeout(openModel,500);
+// setTimeout(nameNewModel,2000)
+// setTimeout(setManualUpload,3000);
+// setTimeout(trainingUpload,5000);
+// setTimeout(validationUpload,9000);
+setTimeout(function() {
+  for (i=0; i<setupSettingsArray.length; i++) {
+    setupA(setupSettingsArray[i][0],setupSettingsArray[i][1])
+  }
+},500)
