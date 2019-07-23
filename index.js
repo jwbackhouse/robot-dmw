@@ -17,7 +17,7 @@ const importFinishx = 950;
 const maximise = 1170;
 const nextx = 1200;
 const centre = 650;
-const inputProperty = 400;
+const inputProperty = 410;
 const importPopupx = 550;
 
 // Set y variables for homescreen
@@ -46,7 +46,7 @@ const importFinishy = 490;
 const nexty = 200;
 
 // Set y variables for model setup homescreen
-one = 330;
+one = 325;
 two = 355;
 three = 380;
 four = 405;
@@ -57,11 +57,13 @@ eight = 505;
 nine = 530;
 ten = 555;
 eleven = 580;
+twelve = 605;
+thirteen = 630;
 
 
 // Set variable valuables
 let settings = {project:first, model:first, name:"Test 1", description:"First test", training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv", validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv"}
-let setupSettingsArray = [[two,"oneUp"],[three,"twoUp"],[four,"oneUp"]];
+let setupSettingsArray = [[one,"characterKey"],[four,"target"],[five,"exclude"],[six,"exclude"],[seven,"exclude"],[eight, "exclude"],[nine,"exclude"]];
 
 // Open DMway
 const openDmway = () => {
@@ -178,83 +180,55 @@ const validationUpload = () => {
 };
 
 // Configure setup fields
-const setupA = (fieldNum, fieldChange) => {
+const setup = (fieldNum, desiredProperty) => {
   robot.moveMouse(inputProperty,fieldNum);
-  switch (fieldChange) {
-    case 'oneDown':
+  robot.mouseClick('left');
+  robot.moveMouse((inputProperty - 30),fieldNum);
+  robot.mouseClick('left');
+  robot.moveMouse(inputProperty,fieldNum);
+  robot.mouseClick('left');
+  switch (desiredProperty) {
+    case 'key':
+      robot.moveMouse(inputProperty,(fieldNum + 30));
       robot.mouseClick('left');
-      robot.keyTap('down');
-      robot.keyTap('enter');
       break;
-    case 'oneUp':
+    case 'exclude':
+      robot.moveMouse(inputProperty,(fieldNum + 60));
       robot.mouseClick('left');
-      robot.keyTap('up');
-      robot.keyTap('enter');
       break;
-    case 'twoUp':
+    case 'target':
+      robot.moveMouse(inputProperty,(fieldNum + 90));
       robot.mouseClick('left');
-      robot.keyTap('up');
-      robot.keyTap('up');
-      robot.keyTap('enter');
+      break;
+    case 'predictor':
+      robot.moveMouse(inputProperty,(fieldNum + 120));
+      robot.mouseClick('left');
+      break;
+    case 'weight':
+      robot.moveMouse(inputProperty,(fieldNum + 150));
+      robot.mouseClick('left');
+      break;
+    case 'characterKey':
+      robot.moveMouse(inputProperty,(fieldNum + 30));
+      robot.mouseClick('left');
+      break;
+    case 'characterExclude':
+      robot.moveMouse(inputProperty,(fieldNum + 60));
+      robot.mouseClick('left');
+      break;
+    case 'factorKey':
+      robot.moveMouse(inputProperty,(fieldNum + 30));
+      robot.mouseClick('left');
+      break;
+    case 'factorExclude':
+      robot.moveMouse(inputProperty,(fieldNum + 60));
+      robot.mouseClick('left');
+      break;
+    case 'factorPredictor':
+      robot.moveMouse(inputProperty,(fieldNum + 90));
+      robot.mouseClick('left');
       break;
   }
-}
-
-const setup = () => {
-  robot.moveMouse(inputProperty,one);
-  robot.mouseClick('left');
-  robot.keyTap('down');
-  robot.keyTap('enter');
-
-  robot.moveMouse(inputProperty,four);
-  robot.mouseClick('left');
-  robot.keyTap('up');
-  robot.keyTap('enter');
-
-  robot.moveMouse(inputProperty,five);
-  robot.mouseClick('left');
-  robot.keyTap('up');
-  robot.keyTap('up');
-  robot.keyTap('enter');
-
-  robot.moveMouse(inputProperty,six);
-  robot.mouseClick('left');
-  robot.keyTap('up');
-  robot.keyTap('up');
-  robot.keyTap('enter');
-
-  robot.moveMouse(inputProperty,seven);
-  robot.mouseClick('left');
-  robot.keyTap('up');
-  robot.keyTap('up');
-  robot.keyTap('enter');
-
-  robot.moveMouse(inputProperty,eight);
-  robot.mouseClick('left');
-  robot.keyTap('up');
-  robot.keyTap('up');
-  robot.keyTap('enter');
-
-  robot.moveMouse(inputProperty,nine);
-  robot.mouseClick('left');
-  robot.keyTap('up');
-  robot.keyTap('up');
-  robot.keyTap('enter');
-
-  robot.moveMouse(inputProperty,ten);
-  robot.mouseClick('left');
-  robot.keyTap('up');
-  robot.keyTap('up');
-  robot.keyTap('enter');
-
-  robot.moveMouse(inputProperty,eleven);
-  robot.mouseClick('left');
-  robot.keyTap('up');
-  robot.keyTap('up');
-  robot.keyTap('enter');
-
-  robot.moveMouse(nextx,nexty);
-  robot.mouseClick('left');
 };
 
 // Run upload functions and move to setup screen
@@ -267,6 +241,7 @@ selectDmway();
 // setTimeout(validationUpload,9000);
 setTimeout(function() {
   for (i=0; i<setupSettingsArray.length; i++) {
-    setupA(setupSettingsArray[i][0],setupSettingsArray[i][1])
+    setup(setupSettingsArray[i][0],setupSettingsArray[i][1])
   }
 },500)
+// setTimeout(setup,1000);
