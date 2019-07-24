@@ -18,6 +18,10 @@ const inputProperty = 410;
 const importPopupx = 550;
 const buildx = 120;
 const setupx = 495;
+const advancedx = 770;
+const featuresx = 570;
+const optimizationx = 470;
+const backx = 235
 
 // Set y variables for homescreen
 const newModel = 160
@@ -61,7 +65,10 @@ thirteen = 625;
 
 // Set other y variables
 const buildy = 125;
-const setupy = 195;
+const setupButtonsy = 195;
+const featuresy = 185;
+const optimizationy = 350;
+const backy = 95
 
 
 // Define settings
@@ -72,10 +79,13 @@ let settings = {
   description:"Third test",
   training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv",
   validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv",
-  destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx"
+  destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx",
+  fcstCompSheet:"'raw 14d'!A2"
 };
 
 const setupOne = [
+  ["1.1AIC"],
+  ["changeMethod"],
   [one,"characterKey"],
   [four,"exclude"],
   [five,"target"],
@@ -86,6 +96,8 @@ const setupOne = [
 ]
 
 const setupTwo = [
+  ["1.2AIC"],
+  [],
   [one,"characterKey"],
   [four,"exclude"],
   [five,"exclude"],
@@ -128,14 +140,18 @@ function timer(ms) {
 // Iteration loop for setup
 async function setupLoop () {
   for (i=0; i<setupSuite.length; i++) {
-    for (j=0; j<setupSuite[i].length; j++) {
+    for (j=2; j<setupSuite[i].length; j++) {
       setup(setupSuite[i][j][0],setupSuite[i][j][1]);
     }
-    setTimeout(clickNext,2000);
-    setTimeout(scoringUpload,30000); // was 74k
-    setTimeout(selectDmway,45000);
-    setTimeout(navigateSetup,46000);
-    await timer(47000);
+    if (setupSuite[i][2] = 'changeMethod') {
+      setTimeout(analysisMethod,3000)
+    };
+    setTimeout(clickNext,5000);
+    setTimeout(runScoring,30000);
+    setTimeout(pasteData,38000);
+    setTimeout(selectDmway,46000);
+    setTimeout(navigateSetup,47000);
+    await timer(48000);
     console.log(i,j);
   }
   console.log('Complete.');
@@ -185,14 +201,6 @@ const nameNewModel = () => {
     robot.keyTap('down');
     robot.keyTap('enter');
   },1000);
-};
-
-// Set upload to manual setting
-const setManualUpload = () => {
-  robot.moveMouse(manualx,manualy);
-  robot.mouseClick('left');
-  robot.keyTap('down');
-  robot.keyTap('enter');
 };
 
 // Upload training file
@@ -273,14 +281,36 @@ const setup = (fieldNum, desiredProperty) => {
   }
 };
 
-// Score and copy data to destination file
-const scoringUpload = () => {
+// Alternate analysis method (AIC / BIC)
+const analysisMethod = () => {
+  robot.moveMouse(advancedx, setupButtonsy);
+  robot.mouseClick('left');
+  setTimeout(() => {
+    robot.moveMouse(featuresx, featuresy);
+    robot.mouseClick('left');
+  },500);
+  setTimeout(() => {
+    robot.moveMouse(optimizationx,optimizationy);
+    robot.mouseClick('left');
+    robot.keyTap('up');
+    robot.keyTap('up');
+    robot.keyTap('enter');
+  },1000);
+  setTimeout(() => {
+    robot.moveMouse(backx, backy);
+    robot.mouseClick('left');
+  },1500);
+}
+
+// Score validation file
+const runScoring = () => {
   // Navigate to Scoring > Score data page
   robot.moveMouse(110,205);
   robot.mouseClick('left');
   robot.moveMouse(440,190);
   robot.mouseClick('left');
   console.log('Navigated to scoring');
+
   // Upload scoring file
   setTimeout(function() {
     robot.moveMouse(625,360);
@@ -293,7 +323,6 @@ const scoringUpload = () => {
       popupUpload(settings.validation);
     },500);
   },500);
-
 
   // Select score with predictors and press 'go'
   setTimeout(function() {
@@ -320,28 +349,41 @@ const scoringUpload = () => {
     robot.moveMouse(310,670);
     robot.mouseClick('left');
   },7000);
+};
 
+// Paste data into destination files
+const pasteData = () => {
   // Open destination file
-  setTimeout(function() {
-    robot.moveMouse(30,75)
-    robot.mouseClick('left');
+  robot.moveMouse(30,75)
+  robot.mouseClick('left');
+  setTimeout(() => {
     robot.moveMouse(185,155);
     robot.mouseClick('left');
     robot.typeString(settings.destination);
     robot.keyTap('enter');
-  },8000);
+  },1000);
 
-  // Paste data into destination file
+  // Navigate to next empty cell in destination sheet and paste data
   setTimeout(function() {
+    robot.keyTap('g','control');
+    robot.typeString(settings.fcstCompSheet);
+    robot.keyTap('enter');
+  },7000);
+  setTimeout(() => {
+    robot.keyTap('right','control');
+    robot.keyTap('right');
     robot.keyTap('v','control');
-  },10000);
-};
+    robot.keyTap('up');
+    robot.typeString(setupOne[0]);
+    robot.keyTap('enter');
+  },7500);
+}
 
 // Navigate from scoring to setup package
 const navigateSetup = () => {
   robot.moveMouse(buildx,buildy);
   robot.mouseClick('left');
-  robot.moveMouse(setupx,setupy);
+  robot.moveMouse(setupx,setupButtonsy);
   robot.mouseClick('left');
 }
 
@@ -351,7 +393,10 @@ selectDmway();
 // openDmway();
 // setTimeout(openModel,500);
 // setTimeout(nameNewModel,2000)
-// setTimeout(setManualUpload,3000); // For new models only
 // setTimeout(trainingUpload,4000);
 // setTimeout(validationUpload,7000);
 setTimeout(setupLoop,500); // Was 14k
+
+// TESTING
+// setTimeout(analysisMethod,500);
+// setTimeout(pasteData,500);
