@@ -70,6 +70,15 @@ const featuresy = 185;
 const optimizationy = 350;
 const backy = 95
 
+// Define run times for each component (ms)
+gapSetup = 4000;
+gapAnalysisMethod = 3000;
+gapRunningModel = 60000;
+gapScoring = 11000;
+gapPasteData = 9000;
+gapSelectDmway = 1000;
+gapNavigateSetup = 1000;
+
 
 // Define settings
 let settings = {
@@ -85,7 +94,7 @@ let settings = {
 
 const setupOne = [
   ["1.1AIC"],
-  ["changeMethod"],
+  [],
   [one,"characterKey"],
   [four,"exclude"],
   [five,"target"],
@@ -97,14 +106,15 @@ const setupOne = [
 
 const setupTwo = [
   ["1.2AIC"],
-  [],
+  ["changeMethod"],
   [one,"characterKey"],
   [four,"exclude"],
   [five,"exclude"],
   [six,"target"],
   [seven,"exclude"],
   [eight, "exclude"],
-  [nine,"exclude"]
+  [nine,"exclude"],
+  [ten,"exclude"]
 ]
 
 const setupSuite = [
@@ -124,12 +134,14 @@ const popupUpload = (fileString) => {
     robot.moveMouse(importFinishx,importFinishy);
     robot.mouseClick('left');
   },500);
+  console.log('File uploaded.')
 }
 
 // Click next
 const clickNext = () => {
   robot.moveMouse(nextx,nexty);
   robot.mouseClick('left');
+  console.log('Next clicked.')
 }
 
 // Timer function for iteration loop
@@ -137,22 +149,40 @@ function timer(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
+const gapArray= [gapSetup,gapAnalysisMethod,gapRunningModel,gapScoring,gapPasteData,gapSelectDmway,gapNavigateSetup];
+const timingArray = [];
+gapArray.reduce(function(a,b,i) {
+  return timingArray[i] = a+b;
+},0);
+
 // Iteration loop for setup
 async function setupLoop () {
   for (i=0; i<setupSuite.length; i++) {
     for (j=2; j<setupSuite[i].length; j++) {
       setup(setupSuite[i][j][0],setupSuite[i][j][1]);
     }
-    if (setupSuite[i][2] = 'changeMethod') {
-      setTimeout(analysisMethod,3000)
-    };
-    setTimeout(clickNext,5000);
-    setTimeout(runScoring,30000);
-    setTimeout(pasteData,38000);
-    setTimeout(selectDmway,46000);
-    setTimeout(navigateSetup,47000);
-    await timer(48000);
-    console.log(i,j);
+    if (setupSuite[i][1] === 'changeMethod') {
+      setTimeout(analysisMethod,timingArray[0])
+      setTimeout(clickNext,timingArray[1]);
+      setTimeout(runScoring,timingArray[2]);
+      setTimeout(() => {
+        pasteData(setupSuite[i][0])
+      },timingArray[3]);
+      setTimeout(selectDmway,timingArray[4]);
+      setTimeout(navigateSetup,timingArray[5]);
+      await timer(timingArray[6]);
+      console.log('Loop: ',i);
+    } else {
+      setTimeout(clickNext,timingArray[1]);
+      setTimeout(runScoring,timingArray[2]);
+      setTimeout(() => {
+        pasteData(setupSuite[i][0])
+      },timingArray[3]);
+      setTimeout(selectDmway,timingArray[4]);
+      setTimeout(navigateSetup,timingArray[5]);
+      await timer(timingArray[6]);
+      console.log('Loop complete: ',i);
+    }
   }
   console.log('Complete.');
 }
@@ -279,6 +309,7 @@ const setup = (fieldNum, desiredProperty) => {
       robot.mouseClick('left');
       break;
   }
+  console.log('Setup complete.');
 };
 
 // Alternate analysis method (AIC / BIC)
@@ -288,18 +319,19 @@ const analysisMethod = () => {
   setTimeout(() => {
     robot.moveMouse(featuresx, featuresy);
     robot.mouseClick('left');
-  },500);
+  },1000);
   setTimeout(() => {
     robot.moveMouse(optimizationx,optimizationy);
     robot.mouseClick('left');
     robot.keyTap('up');
     robot.keyTap('up');
     robot.keyTap('enter');
-  },1000);
+  },2000);
   setTimeout(() => {
     robot.moveMouse(backx, backy);
     robot.mouseClick('left');
-  },1500);
+  },3000);
+  console.log('Analysis method changed.')
 }
 
 // Score validation file
@@ -307,9 +339,10 @@ const runScoring = () => {
   // Navigate to Scoring > Score data page
   robot.moveMouse(110,205);
   robot.mouseClick('left');
-  robot.moveMouse(440,190);
-  robot.mouseClick('left');
-  console.log('Navigated to scoring');
+  setTimeout(() => {
+    robot.moveMouse(440,190);
+    robot.mouseClick('left');
+  },500);
 
   // Upload scoring file
   setTimeout(function() {
@@ -318,11 +351,10 @@ const runScoring = () => {
     robot.keyTap('down');
     robot.keyTap('down');
     robot.keyTap('enter');
-    console.log('selected popup');
     setTimeout(function() {
       popupUpload(settings.validation);
     },500);
-  },500);
+  },1000);
 
   // Select score with predictors and press 'go'
   setTimeout(function() {
@@ -330,7 +362,7 @@ const runScoring = () => {
     robot.mouseClick('left');
     robot.moveMouse(390,440);
     robot.mouseClick('left')
-  },3000);
+  },6000);
 
   // Highlight first two columns
   setTimeout(function() {
@@ -341,18 +373,19 @@ const runScoring = () => {
     robot.keyToggle('shift','down');
     robot.mouseClick('left');
     robot.keyToggle('shift','up');
-  },6000);
+  },9000);
 
   // Copy data
   setTimeout(function() {
     robot.mouseClick('right');
     robot.moveMouse(310,670);
     robot.mouseClick('left');
-  },7000);
+  },10000);
+  console.log('Scoring run.')
 };
 
 // Paste data into destination files
-const pasteData = () => {
+const pasteData = (modelId) => {
   // Open destination file
   robot.moveMouse(30,75)
   robot.mouseClick('left');
@@ -369,14 +402,16 @@ const pasteData = () => {
     robot.typeString(settings.fcstCompSheet);
     robot.keyTap('enter');
   },7000);
+
   setTimeout(() => {
     robot.keyTap('right','control');
     robot.keyTap('right');
     robot.keyTap('v','control');
     robot.keyTap('up');
-    robot.typeString(setupOne[0]);
+    robot.typeString(modelId);
     robot.keyTap('enter');
   },7500);
+  console.log('Score pasted into destination file.')
 }
 
 // Navigate from scoring to setup package
@@ -385,6 +420,7 @@ const navigateSetup = () => {
   robot.mouseClick('left');
   robot.moveMouse(setupx,setupButtonsy);
   robot.mouseClick('left');
+  console.log('Navigated back to setup.')
 }
 
 // FUNCTIONS TO RUN
@@ -400,3 +436,6 @@ setTimeout(setupLoop,500); // Was 14k
 // TESTING
 // setTimeout(analysisMethod,500);
 // setTimeout(pasteData,500);
+// setTimeout(runScoring,500);
+// console.log(gapArray);
+// console.log(timingArray)
