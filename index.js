@@ -70,22 +70,38 @@ const featuresy = 185;
 const optimizationy = 350;
 const backy = 95
 
-// Define run times for each component (ms)
-gapSetup = 4000;
-gapAnalysisMethod = 3000;
+// Define run times for each setupLoop component (ms)
+gapSetup = 3000;
+gapAnalysisMethod = 2000;
 gapRunningModel = 60000;
 gapScoring = 11000;
 gapPasteData = 9000;
 gapSelectDmway = 1000;
 gapNavigateSetup = 1000;
 
+// Define run times for other main functions (ms)
+gapOpenDmway = 13000;
+gapOpenModel = 2000;
+gapNameNewModel = 3000;
+gapTrainingUpload = 3000;
+gapValidationUpload = 6000;
+
+const gapArray= [gapSetup, gapAnalysisMethod, gapRunningModel, gapScoring, gapPasteData, gapSelectDmway, gapNavigateSetup];
+
+const timingArray = [];
+
+gapArray.reduce(function(a,b,i) {
+  return timingArray[i] = a+b;
+},0);
+
+
 
 // Define settings
 let settings = {
-  project:second,
+  project:sixth, // using 'first' not 'one'
   model:newModel,
-  name:"Test 3",
-  description:"Third test",
+  name:"Test 1",
+  description:"New test",
   training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv",
   validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv",
   destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx",
@@ -149,12 +165,6 @@ function timer(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-const gapArray= [gapSetup,gapAnalysisMethod,gapRunningModel,gapScoring,gapPasteData,gapSelectDmway,gapNavigateSetup];
-const timingArray = [];
-gapArray.reduce(function(a,b,i) {
-  return timingArray[i] = a+b;
-},0);
-
 // Iteration loop for setup
 async function setupLoop () {
   for (i=0; i<setupSuite.length; i++) {
@@ -196,13 +206,15 @@ const selectDmway = () => {
 };
 
 // Open DMway
-const openDmway = () => {
+async function openDmway () {
   robot.moveMouse(5,180);
   robot.mouseClick('left');
   setTimeout(function() {
     robot.moveMouse(maximise,20);
     robot.mouseClick('left');
   },12000)
+  await timer (gapOpenDmway);
+  console.log('DMway opened.')
 };
 
 // Open model
@@ -213,9 +225,10 @@ const openModel = () => {
   robot.moveMouse(modelx, settings.model);
   robot.scrollMouse(0,5000);
   robot.mouseClick('left','double');
+  console.log('Model opened.')
 };
 
-// Name new model & choose manual setting
+// Name new model
 const nameNewModel = () => {
   robot.moveMouse(centre,newName);
   robot.mouseClick('left');
@@ -225,13 +238,16 @@ const nameNewModel = () => {
   robot.typeString(settings.description);
   robot.moveMouse(centre,newAccept);
   robot.mouseClick('left');
-  setTimeout(function() {
-    robot.moveMouse(manualx,manualy);
-    robot.mouseClick('left');
-    robot.keyTap('down');
-    robot.keyTap('enter');
-  },1000);
+  console.log('New model named.')
 };
+
+// Choose manual splitting
+const manualSplit = () => {
+  robot.moveMouse(manualx,manualy);
+  robot.mouseClick('left');
+  robot.keyTap('down');
+  robot.keyTap('enter');
+}
 
 // Upload training file
 const trainingUpload = () => {
@@ -243,6 +259,7 @@ const trainingUpload = () => {
   setTimeout(function() {
     popupUpload(settings.training)
   },500);
+  console.log('Training file uploaded.')
 };
 
 // Upload validation file + click next
@@ -255,8 +272,8 @@ const validationUpload = () => {
   setTimeout(function() {
     popupUpload(settings.validation)
   },500);
-
   setTimeout(clickNext,3000);
+  console.log('Validation file uploaded.')
 };
 
 // Configure setup fields
@@ -423,19 +440,43 @@ const navigateSetup = () => {
   console.log('Navigated back to setup.')
 }
 
-// FUNCTIONS TO RUN
-// Run upload functions and move to setup screen
-selectDmway();
+// AGGREGATE FUNCTIONS
+async function runModel() {
+  trainingUpload();
+  await timer(gapTrainingUpload);
+  validationUpload();
+  await timer(gapValidationUpload);
+  setupLoop();
+};
+
+async function runExistingModel() {
+  selectDmway();
+  await timer(gapSelectDmway);
+  openModel();
+  await timer(gapOpenModel);
+  manualSplit();
+  await timer(750);
+  runModel();
+}
+
+async function runNewmodel() {
+  selectDmway();
+  await timer(gapSelectDmway);
+  openModel();
+  await timer(gapOpenModel);
+  nameNewModel();
+  await timer (gapNameNewModel);
+  manualSplit();
+  await timer(500);
+  runModel();
+}
+// selectDmway();
 // openDmway();
-// setTimeout(openModel,500);
-// setTimeout(nameNewModel,2000)
+// setTimeout(openModel,Array[8]);
+// setTimeout(nameNewModel,gapArray[])
 // setTimeout(trainingUpload,4000);
 // setTimeout(validationUpload,7000);
-setTimeout(setupLoop,500); // Was 14k
+// setTimeout(setupLoop,500); // Was 14k
 
-// TESTING
-// setTimeout(analysisMethod,500);
-// setTimeout(pasteData,500);
-// setTimeout(runScoring,500);
-// console.log(gapArray);
-// console.log(timingArray)
+// FUNCTIONS TO RUN
+runNewmodel();
