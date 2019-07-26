@@ -1,11 +1,12 @@
 // Require packages
 const robot = require('robotjs');
+const masterSettings = require('./settings.js')
 
 // Reduce mouse & keyboard delay
 robot.setMouseDelay(2);
 robot.setKeyboardDelay(2);
 
-// Set x variables
+// Set x coordinates
 const projects = 250;
 const modelx = 850;
 const importx = 650;
@@ -23,47 +24,20 @@ const featuresx = 570;
 const optimizationx = 470;
 const backx = 235
 
-// Set y variables for homescreen
-const newModel = 160
-const first = 225;
-const second = 250;
-const third = 275;
-const fourth = 300;
-const fifth = 325;
-const sixth = 350;
-const seventh = 375;
-const eighth = 400;
-const ninth = 425;
-
-// Set y variables for new model popup
+// Set y coordinates for new model popup
 const newName = 250;
 const newDesc = 280;
 const newAccept = 340;
 
-// Set y variables for model load screen
-const manualy = fourth;
+// Set y coordinates for model load screen
+const manualy = 300;
 const importTraining = 420;
 const importValidation = 560;
 const importPopupy = 530;
 const importFinishy = 490;
 const nexty = 200;
 
-// Set y variables for model setup homescreen
-one = 325;
-two = 350;
-three = 375;
-four = 400;
-five = 425;
-six = 450;
-seven = 475;
-eight = 500;
-nine = 525;
-ten = 550;
-eleven = 575;
-twelve = 600;
-thirteen = 625;
-
-// Set other y variables
+// Set other y coordinates
 const buildy = 125;
 const setupButtonsy = 195;
 const featuresy = 185;
@@ -79,13 +53,6 @@ gapPasteData = 9000;
 gapSelectDmway = 1000;
 gapNavigateSetup = 1000;
 
-// Define run times for other main functions (ms)
-gapOpenDmway = 13000;
-gapOpenModel = 2000;
-gapNameNewModel = 3000;
-gapTrainingUpload = 3000;
-gapValidationUpload = 6000;
-
 const gapArray= [gapSetup, gapAnalysisMethod, gapRunningModel, gapScoring, gapPasteData, gapSelectDmway, gapNavigateSetup];
 
 const timingArray = [];
@@ -94,49 +61,12 @@ gapArray.reduce(function(a,b,i) {
   return timingArray[i] = a+b;
 },0);
 
-
-
-// Define settings
-let settings = {
-  project:sixth, // using 'first' not 'one'
-  model:newModel,
-  name:"Test 1",
-  description:"New test",
-  training:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 T.csv",
-  validation:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Model files 14d\\birmingham\\birmingham(14)(30Jun) 1 V.csv",
-  destination:"C:\\Users\\jwbackhouse\\Google Drive\\Skarp\\DMway models\\Forecast comparisons\\test.xlsx",
-  fcstCompSheet:"'raw 14d'!A2"
-};
-
-const setupOne = [
-  ["1.1AIC"],
-  [],
-  [one,"characterKey"],
-  [four,"exclude"],
-  [five,"target"],
-  [six,"exclude"],
-  [seven,"exclude"],
-  [eight, "exclude"],
-  [nine,"exclude"]
-]
-
-const setupTwo = [
-  ["1.2AIC"],
-  ["changeMethod"],
-  [one,"characterKey"],
-  [four,"exclude"],
-  [five,"exclude"],
-  [six,"target"],
-  [seven,"exclude"],
-  [eight, "exclude"],
-  [nine,"exclude"],
-  [ten,"exclude"]
-]
-
-const setupSuite = [
-  setupOne,
-  setupTwo
-];
+// Define run times for other main functions (ms)
+gapOpenDmway = 13000;
+gapOpenModel = 2000;
+gapNameNewModel = 3000;
+gapTrainingUpload = 3000;
+gapValidationUpload = 6000;
 
 
 // HELPER FUNCTIONS
@@ -167,16 +97,16 @@ function timer(ms) {
 
 // Iteration loop for setup
 async function setupLoop () {
-  for (i=0; i<setupSuite.length; i++) {
-    for (j=2; j<setupSuite[i].length; j++) {
-      setup(setupSuite[i][j][0],setupSuite[i][j][1]);
+  for (i=0; i<masterSettings.setupSuite.length; i++) {
+    for (j=2; j<masterSettings.setupSuite[i].length; j++) {
+      setup(masterSettings.setupSuite[i][j][0],masterSettings.setupSuite[i][j][1]);
     }
-    if (setupSuite[i][1] === 'changeMethod') {
+    if (masterSettings.setupSuite[i][1] === 'changeMethod') {
       setTimeout(analysisMethod,timingArray[0])
       setTimeout(clickNext,timingArray[1]);
       setTimeout(runScoring,timingArray[2]);
       setTimeout(() => {
-        pasteData(setupSuite[i][0])
+        pasteData(masterSettings.setupSuite[i][0])
       },timingArray[3]);
       setTimeout(selectDmway,timingArray[4]);
       setTimeout(navigateSetup,timingArray[5]);
@@ -186,7 +116,7 @@ async function setupLoop () {
       setTimeout(clickNext,timingArray[1]);
       setTimeout(runScoring,timingArray[2]);
       setTimeout(() => {
-        pasteData(setupSuite[i][0])
+        pasteData(masterSettings.setupSuite[i][0])
       },timingArray[3]);
       setTimeout(selectDmway,timingArray[4]);
       setTimeout(navigateSetup,timingArray[5]);
@@ -219,10 +149,10 @@ async function openDmway () {
 
 // Open model
 const openModel = () => {
-  robot.moveMouse(projects, settings.project);
+  robot.moveMouse(projects, masterSettings.settings.project);
   robot.scrollMouse(0,5000);
   robot.mouseClick('left');
-  robot.moveMouse(modelx, settings.model);
+  robot.moveMouse(modelx, masterSettings.settings.model);
   robot.scrollMouse(0,5000);
   robot.mouseClick('left','double');
   console.log('Model opened.')
@@ -232,10 +162,10 @@ const openModel = () => {
 const nameNewModel = () => {
   robot.moveMouse(centre,newName);
   robot.mouseClick('left');
-  robot.typeString(settings.name);
+  robot.typeString(masterSettings.settings.name);
   robot.moveMouse(centre,newDesc);
   robot.mouseClick('left');
-  robot.typeString(settings.description);
+  robot.typeString(masterSettings.settings.description);
   robot.moveMouse(centre,newAccept);
   robot.mouseClick('left');
   console.log('New model named.')
@@ -257,7 +187,7 @@ const trainingUpload = () => {
   robot.keyTap('down');
   robot.keyTap('enter');
   setTimeout(function() {
-    popupUpload(settings.training)
+    popupUpload(masterSettings.settings.training)
   },500);
   console.log('Training file uploaded.')
 };
@@ -270,7 +200,7 @@ const validationUpload = () => {
   robot.keyTap('down');
   robot.keyTap('enter');
   setTimeout(function() {
-    popupUpload(settings.validation)
+    popupUpload(masterSettings.settings.validation)
   },500);
   setTimeout(clickNext,3000);
   console.log('Validation file uploaded.')
@@ -369,7 +299,7 @@ const runScoring = () => {
     robot.keyTap('down');
     robot.keyTap('enter');
     setTimeout(function() {
-      popupUpload(settings.validation);
+      popupUpload(masterSettings.settings.validation);
     },500);
   },1000);
 
@@ -409,14 +339,14 @@ const pasteData = (modelId) => {
   setTimeout(() => {
     robot.moveMouse(185,155);
     robot.mouseClick('left');
-    robot.typeString(settings.destination);
+    robot.typeString(masterSettings.settings.destination);
     robot.keyTap('enter');
   },1000);
 
   // Navigate to next empty cell in destination sheet and paste data
   setTimeout(function() {
     robot.keyTap('g','control');
-    robot.typeString(settings.fcstCompSheet);
+    robot.typeString(masterSettings.settings.fcstCompSheet);
     robot.keyTap('enter');
   },7000);
 
@@ -470,13 +400,13 @@ async function runNewmodel() {
   await timer(500);
   runModel();
 }
-// selectDmway();
-// openDmway();
-// setTimeout(openModel,Array[8]);
-// setTimeout(nameNewModel,gapArray[])
-// setTimeout(trainingUpload,4000);
-// setTimeout(validationUpload,7000);
-// setTimeout(setupLoop,500); // Was 14k
+
 
 // FUNCTIONS TO RUN
-runNewmodel();
+
+console.log(masterSettings.settings.model);
+if (masterSettings.settings.model === 160) {
+  runNewmodel();
+} else {
+  runExistingModel();
+};
