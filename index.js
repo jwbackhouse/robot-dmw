@@ -48,22 +48,22 @@ const missingy = 420;
 const backy = 95;
 
 // Define run times (ms)
-gapSelectDmway = 1000;
+gapSelectDmway = 2000;
 gapOpenDmway = 30000;
 gapOpenModel = 2000;
 gapNameNewModel = 2000;
 gapTrainingUpload = 1500;
 gapValidationUpload = 1500;
 gapSetup = 500;
-gapSetAdvanced = 2000;
-gapExitAdvanced = 4000;
-gapRunningModel = 100000;
+gapSetAdvanced = 1000;
+gapExitAdvanced = 6000;
+gapRunningModel = masterSettings.settings.runTime;
 gapNavScoring = 1000;
-gapUploadScoring = 2000;
-gapRunScoring = 5000;
-gapOpenDest = 12000;
-gapPasteData = 9000;
-gapClickNext = 3000;
+gapUploadScoring = 3000;
+gapRunScoring = 7000;
+gapOpenDest = 14000;
+gapPasteData = 11000;
+gapClickNext = 5000;
 
 
 // HELPER FUNCTIONS
@@ -228,40 +228,58 @@ async function setup(fieldNum, desiredProperty) {
   console.log('Setup complete.');
 };
 
-// Set max proportion of missing values
-async function setAdvanced() {
+async function openAdvanced() {
   robot.moveMouse(advancedx, setupButtonsy);
   robot.mouseClick('left');
   await timer(1000);
-  robot.moveMouse(univariatex, featuresy);
+  console.log('Advanced settings opened.');
+};
+
+// Set max proportion of missing values
+async function setMissing() {
+  robot.moveMouse(270,setupButtonsy);
   robot.mouseClick('left');
+  await timer(1000);
+  robot.keyTap('right');
+//   robot.moveMouse(univariatex, featuresy);
+//   robot.mouseClick('left');
   await timer(1000);
   robot.moveMouse(missingx,missingy);
   robot.mouseClick('left','double');
   await timer(500);
   robot.typeString('0.001');
+  await timer(500);
+  console.log('Missing variables set to 0.001.')
 };
 
 // Alternate analysis method (AIC / BIC)
-async function analysisMethod() {
-  robot.moveMouse(featuresx, featuresy);
+async function setAnalysisMethod() {
+  robot.moveMouse(270,setupButtonsy);
   robot.mouseClick('left');
+  await timer(1000);
+  robot.keyTap('right');
+  robot.keyTap('right');
+  // robot.moveMouse(featuresx, featuresy);
+  // robot.mouseClick('left');
   await timer (500);
   robot.moveMouse(optimizationx,optimizationy);
   robot.mouseClick('left');
+  await timer (500);
   robot.keyTap('up');
+  await timer (500);
   robot.keyTap('up');
+  await timer (500);
   robot.keyTap('enter');
   await timer(gapSetAdvanced)
-  console.log('Method selected.')
+  console.log('Analysis method switched.')
 };
 
 // Exit advanced settings
 async function exitAdvanced() {
   robot.moveMouse(backx, backy);
   robot.mouseClick('left');
-  console.log('Analysis method changed.');
   await timer(gapExitAdvanced);
+  console.log('Advanced settings exited.');
 };
 
 // Navigate to Scoring > Score data page
@@ -304,11 +322,11 @@ async function runScoring() {
   robot.keyToggle('shift','up');
 
   // Copy data
-  await timer(1000);
+  await timer(2000);
   robot.mouseClick('right');
   robot.moveMouse(310,670);
   robot.mouseClick('left');
-  await timer(500);
+  await timer(1000);
   console.log('Scoring run.')
 };
 
@@ -327,7 +345,7 @@ async function openDest() {
 async function selectDest() {
   robot.moveMouse(30,140);
   robot.mouseClick('left');
-  await timer(gapSelectDmway);
+  await timer(2000);
 };
 
 // Paste scoring data into destination file
@@ -356,6 +374,7 @@ async function pasteData(modelId) {
 async function navigateSetup() {
   robot.moveMouse(buildx,buildy);
   robot.mouseClick('left');
+  await timer(500);
   robot.moveMouse(setupx,setupButtonsy);
   robot.mouseClick('left');
   await timer(500);
@@ -388,11 +407,11 @@ async function laterSetupLoop(setupNum) {
     await timer(gapRunningModel);
     await navScoring();
     await runScoring();
-    await selectDest()
+    await selectDest();
     await pasteData(masterSettings.setupSuite[setupNum][0]);
     await selectDmway()
     await navigateSetup();
-    console.log('Loop complete: ', setupNum);
+    console.log('Loop complete: ', setupNum + 1);
   }
   catch(err) {
     console.log(err)
@@ -404,18 +423,22 @@ async function firstSetup() {
     for (j=2; j<10; j++) {
       await setup(masterSettings.setupSuite[0][j][0],masterSettings.setupSuite[0][j][1]);
     }
-    robot.scrollMouse(0,-400);
+    await timer(500);
+    await robot.moveMouse(inputProperty,400);
+    await robot.scrollMouse(0,-400);
     console.log('Scrolled down.')
-    await timer(1000);
+    await timer(500);
     for (k=10; k<masterSettings.setupSuite[0].length; k++) {
       await setup(masterSettings.setupSuite[0][k][0],masterSettings.setupSuite[0][k][1]);
     }
     if (masterSettings.setupSuite[0][1][0] === 'changeMethod') {
-      await setAdvanced();
-      await analysisMethod();
+      await openAdvanced();
+      await setMissing();
+      await setAnalysisMethod();
       await firstSetupLoop();
     } else {
-      await setAdvanced();
+      await openAdvanced();
+      await setMissing();
       await firstSetupLoop();
     }
   } catch(err) {
@@ -429,14 +452,17 @@ async function subsequentSetups () {
       for (l=2; l<10; l++) {
         setup(masterSettings.setupSuite[i][l][0],masterSettings.setupSuite[i][l][1]);
       }
-      await timer(1000);
-      robot.scrollMouse(0,-400);
+      await timer(500);
+      await robot.moveMouse(inputProperty,400);
+      await robot.scrollMouse(0,-400);
+      console.log('Scrolled down.')
+      await timer(500);
       for (m=10; m<masterSettings.setupSuite[i].length; m++) {
         setup(masterSettings.setupSuite[i][m][0],masterSettings.setupSuite[i][m][1]);
       }
       if (masterSettings.setupSuite[i][1][0] === 'changeMethod') {
-        await setAdvanced();
-        await analysisMethod();
+        await openAdvanced();
+        await setAnalysisMethod();
         await exitAdvanced();
         await laterSetupLoop(i);
       } else {
@@ -483,25 +509,37 @@ async function runNewmodel() {
   }
 }
 
-// OPEN DMway
-// openDmway();
-
-// RUN IF STARTING FROM SCRATCH - start on File screen
-// if (masterSettings.settings.model === 160) {
-//   runNewmodel();
-// } else {
-//   runExistingModel();
-// };
-
-// UPLOAD TRAINING & VALIDATION FILES AND RUN SETUPS - start on Build screen
-// selectDmway();
-// setTimeout(uploadAndRun,500);
-
-// RUN SETUP LOOPS - start on Setup screen
 async function runSetupLoops() {
   await selectDmway();
   await navigateSetup();
   await firstSetup();
   await subsequentSetups();
 };
-runSetupLoops();
+
+
+// OPEN DMway
+// openDmway();
+
+// RUN IF STARTING FROM SCRATCH - start on File screen
+if (masterSettings.settings.model === 160) {
+  runNewmodel();
+} else {
+  runExistingModel();
+};
+
+// UPLOAD TRAINING & VALIDATION FILES AND RUN SETUPS - start on Build screen
+// selectDmway();
+// setTimeout(uploadAndRun,500);
+
+// RUN SETUP LOOPS - start anywhere in model
+// runSetupLoops();
+
+async function test() {
+  await selectDmway();
+  await openAdvanced();
+  await setMissing();
+  await setAnalysisMethod();
+  await exitAdvanced();
+};
+
+// test();
