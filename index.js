@@ -48,22 +48,22 @@ const missingy = 420;
 const backy = 95;
 
 // Define run times (ms)
-gapSelectDmway = 2000;
-gapOpenDmway = 30000;
+const gapSelectDmway = 1000;
+const gapOpenDmway = 30000;
 gapOpenModel = 2000;
 gapNameNewModel = 2000;
 gapTrainingUpload = 1500;
-gapValidationUpload = 1500;
+gapValidationUpload = 3000;
 gapSetup = 500;
+gapAfterSetup = 4000;
 gapSetAdvanced = 1000;
-gapExitAdvanced = 6000;
+gapExitAdvanced = 4000;
 gapRunningModel = masterSettings.settings.runTime;
 gapNavScoring = 1000;
 gapUploadScoring = 3000;
-gapRunScoring = 7000;
-gapOpenDest = 14000;
-gapPasteData = 11000;
-gapClickNext = 5000;
+gapRunScoring = 9000;
+const gapOpenDest = 3000;
+gapClickNext = 2000;
 
 
 // HELPER FUNCTIONS
@@ -83,7 +83,7 @@ async function popupUpload(fileString) {
 async function clickNext() {
   robot.moveMouse(nextx,nexty);
   robot.mouseClick('left');
-  await timer(gapClickNext);
+  await timer (gapClickNext);
   console.log('Next clicked.')
 }
 
@@ -182,6 +182,7 @@ async function setup(fieldNum, desiredProperty) {
   robot.mouseClick('left');
   robot.moveMouse(inputProperty,fieldNum);
   robot.mouseClick('left');
+
   switch (desiredProperty) {
     case 'key':
       robot.moveMouse(inputProperty,(fieldNum + 30));
@@ -191,8 +192,16 @@ async function setup(fieldNum, desiredProperty) {
       robot.moveMouse(inputProperty,(fieldNum + 60));
       robot.mouseClick('left');
       break;
+    case 'LFL_exclude':
+      robot.moveMouse(inputProperty,600);
+      robot.mouseClick('left');
+      break;
     case 'target':
       robot.moveMouse(inputProperty,(fieldNum + 90));
+      robot.mouseClick('left');
+      break;
+    case 'LFL_target':
+      robot.moveMouse(inputProperty,630);
       robot.mouseClick('left');
       break;
     case 'predictor':
@@ -282,6 +291,25 @@ async function exitAdvanced() {
   console.log('Advanced settings exited.');
 };
 
+// Re-set 3sd as target (bug workaround)
+async function threeSDReset() {
+  if (masterSettings.setupSuite[0][6][1] === 'target') {
+    await robot.moveMouse(inputProperty,475);
+    await robot.mouseClick('left');
+    await robot.moveMouse(inputProperty,535);
+    await robot.mouseClick('left');
+    await robot.moveMouse(inputProperty,475);
+    await robot.mouseClick('left');
+    await robot.moveMouse(inputProperty,565);
+    await robot.mouseClick('left');
+    await timer(gapClickNext)
+    console.log('3sd re-set as target.')
+  } else {
+    await timer(500);
+  }
+};
+
+
 // Navigate to Scoring > Score data page
 async function navScoring() {
   robot.moveMouse(110,205);
@@ -298,7 +326,7 @@ async function uploadScoring() {
   robot.keyTap('down');
   robot.keyTap('down');
   robot.keyTap('enter');
-  await timer(500);
+  await timer(1500);
   popupUpload(masterSettings.settings.validation);
   await timer(gapUploadScoring);
 }
@@ -337,7 +365,7 @@ async function openDest() {
   await timer(1000);
   robot.moveMouse(185,155);
   robot.mouseClick('left');
-  robot.typeString(masterSettings.settings.destination);
+  await robot.typeString(masterSettings.settings.destination);
   robot.keyTap('enter');
   await timer(gapOpenDest);
 };
@@ -354,19 +382,19 @@ async function pasteData(modelId) {
   robot.keyTap('g','control');
   robot.typeString(masterSettings.settings.fcstCompSheet);
   robot.keyTap('enter');
-  await timer(500);
+  await timer(2000);
 
   // Move to next empty cell and paste data
   robot.keyTap('right','control');
   robot.keyTap('right');
   robot.keyTap('v','control');
-  await timer(500);
+  await timer(3000);
 
   // Enter model name
   robot.keyTap('up');
   robot.typeString(modelId);
   robot.keyTap('enter');
-  await timer(500);
+  await timer(2000);
   console.log('Score pasted into destination file.')
 };
 
@@ -384,9 +412,8 @@ async function navigateSetup() {
 // AGGREGATE FUNCTIONS
 async function firstSetupLoop() {
   try {
-    await exitAdvanced();
     await clickNext();
-    await timer(gapRunningModel);
+    await timer(gapRunningModel+30000);
     await navScoring();
     await uploadScoring();
     await runScoring();
@@ -428,17 +455,30 @@ async function firstSetup() {
     await robot.scrollMouse(0,-400);
     console.log('Scrolled down.')
     await timer(500);
-    for (k=10; k<masterSettings.setupSuite[0].length; k++) {
-      await setup(masterSettings.setupSuite[0][k][0],masterSettings.setupSuite[0][k][1]);
+    // for (k=10; k<masterSettings.setupSuite[0].length; k++) {
+    //   await setup(masterSettings.setupSuite[0][k][0],masterSettings.setupSuite[0][k][1]);
+    // }
+    await setup(masterSettings.setupSuite[0][10][0],masterSettings.setupSuite[0][10][1])
+    // await timer(500);
+    await robot.scrollMouse(0,-10000);
+    console.log('Scrolled to bottom.')
+    await timer(500);
+    for (l=11; l<masterSettings.setupSuite[0].length; l++) {
+      await setup(masterSettings.setupSuite[0][l][0],masterSettings.setupSuite[0][l][1]);
     }
+    await timer(gapAfterSetup);
+    await openAdvanced();
+    await setMissing();
     if (masterSettings.setupSuite[0][1][0] === 'changeMethod') {
-      await openAdvanced();
-      await setMissing();
       await setAnalysisMethod();
+      await exitAdvanced();
+    } else {
+      await exitAdvanced();
+    }
+    if (masterSettings.setupSuite[0][6][1] === 'target') {
+      await threeSDReset();
       await firstSetupLoop();
     } else {
-      await openAdvanced();
-      await setMissing();
       await firstSetupLoop();
     }
   } catch(err) {
@@ -457,13 +497,28 @@ async function subsequentSetups () {
       await robot.scrollMouse(0,-400);
       console.log('Scrolled down.')
       await timer(500);
-      for (m=10; m<masterSettings.setupSuite[i].length; m++) {
-        setup(masterSettings.setupSuite[i][m][0],masterSettings.setupSuite[i][m][1]);
+      // for (m=10; m<masterSettings.setupSuite[i].length; m++) {
+      //   await setup(masterSettings.setupSuite[i][m][0],masterSettings.setupSuite[i][m][1]);
+      // }
+      await setup(masterSettings.setupSuite[0][10][0],masterSettings.setupSuite[0][10][1])
+      await robot.scrollMouse(0,-10000);
+      console.log('Scrolled to bottom.')
+      await timer(500);
+      for (n=11; n<masterSettings.setupSuite[0].length; n++) {
+        await setup(masterSettings.setupSuite[0][n][0],masterSettings.setupSuite[0][n][1]);
       }
+      await timer(gapAfterSetup);
       if (masterSettings.setupSuite[i][1][0] === 'changeMethod') {
         await openAdvanced();
         await setAnalysisMethod();
         await exitAdvanced();
+        // await laterSetupLoop(i);
+      } else {
+        await robot.moveMouse(inputProperty,400);
+        await robot.scrollMouse(0,400);
+      };
+      if (masterSettings.setupSuite[i][6][1] === 'target') {
+        await threeSDReset();
         await laterSetupLoop(i);
       } else {
         await laterSetupLoop(i);
@@ -477,8 +532,12 @@ async function subsequentSetups () {
 
 async function uploadAndRun() {
   try {
+    robot.moveMouse(buildx,buildy);
+    robot.mouseClick('left');
+    await timer(500);
     await trainingUpload();
     await validationUpload();
+    await timer(1000);
     await firstSetup();
     await subsequentSetups();
   } catch(err) {
@@ -490,7 +549,6 @@ async function runExistingModel() {
   try{
     await selectDmway();
     await openModel();
-    await manualSplit();
     await uploadAndRun();
   } catch(err) {
     console.log(err)
@@ -516,30 +574,26 @@ async function runSetupLoops() {
   await subsequentSetups();
 };
 
+// FOR TESTING
+// async function test() {
+//   await selectDmway();
+//   await navigateSetup();
+//   await robot.moveMouse(inputProperty,400);
+//   await robot.scrollMouse(0,-10000);
+// };
+// test();
+
 
 // OPEN DMway
-// openDmway();
+// async function openDMW() {
+//   await openDmway();
+// };
 
 // RUN IF STARTING FROM SCRATCH - start on File screen
-if (masterSettings.settings.model === 160) {
-  runNewmodel();
-} else {
-  runExistingModel();
-};
+// if (masterSettings.settings.model === 160) {runNewmodel();} else {runExistingModel();};
 
 // UPLOAD TRAINING & VALIDATION FILES AND RUN SETUPS - start on Build screen
-// selectDmway();
-// setTimeout(uploadAndRun,500);
+// selectDmway(); setTimeout(uploadAndRun,500);
 
 // RUN SETUP LOOPS - start anywhere in model
-// runSetupLoops();
-
-async function test() {
-  await selectDmway();
-  await openAdvanced();
-  await setMissing();
-  await setAnalysisMethod();
-  await exitAdvanced();
-};
-
-// test();
+runSetupLoops();
