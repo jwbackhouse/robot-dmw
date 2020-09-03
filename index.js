@@ -583,7 +583,6 @@ async function runSetupLoops() {
 // };
 // test();
 
-
 // OPEN DMway
 // async function openDMW() {
 //   await openDmway();
@@ -596,4 +595,5 @@ async function runSetupLoops() {
 // selectDmway(); setTimeout(uploadAndRun,500);
 
 // RUN SETUP LOOPS - start anywhere in model
+
 runSetupLoops();
